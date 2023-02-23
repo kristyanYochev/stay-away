@@ -1,3 +1,7 @@
+use std::collections::HashMap;
+
+pub struct Deck(HashMap<CardKind, u8>);
+
 /// Represents a single kind of card (i.e. Flamethrower)
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum CardKind {
