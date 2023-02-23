@@ -73,3 +73,19 @@ impl CardKind {
         }
     }
 }
+
+impl Deck {
+    fn from_card_counts(card_counts: HashMap<CardKind, u8>) -> Self {
+        Self(card_counts)
+    }
+
+    pub fn for_player_count(player_count: u8) -> Self {
+        Self::from_card_counts(Self::player_count_to_card_counts(player_count))
+    }
+}
+
+impl Deck {
+    fn player_count_to_card_counts(player_count: u8) -> HashMap<CardKind, u8> {
+        todo!("Hard-code the hashmaps")
+    }
+}
