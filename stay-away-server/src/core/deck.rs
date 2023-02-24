@@ -87,6 +87,10 @@ impl Deck {
     pub fn total_card_count(&self) -> u8 {
         self.0.iter().map(|(_, count)| count).sum()
     }
+
+    pub fn card_count(&self, card_kind: CardKind) -> u8 {
+        self.0[&card_kind]
+    }
 }
 
 impl Deck {
