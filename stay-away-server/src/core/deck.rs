@@ -83,6 +83,10 @@ impl Deck {
         // todo!("Properly handle player count bounds");
         Self::from_card_counts(Self::player_count_to_card_counts(player_count).unwrap())
     }
+
+    pub fn total_card_count(&self) -> u8 {
+        self.0.iter().map(|(_, count)| count).sum()
+    }
 }
 
 impl Deck {
