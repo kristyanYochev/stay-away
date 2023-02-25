@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use self::errors::NoSuchCard;
+
 pub struct Deck(HashMap<CardKind, u8>);
 
 /// Represents a single kind of card (i.e. Flamethrower)
@@ -95,6 +97,30 @@ impl Deck {
             0
         }
     }
+
+    pub fn draw_specific_card(
+        &mut self,
+        card_kind: CardKind,
+    ) -> Result<CardKind, errors::NoSuchCard> {
+        let count = self
+            .0
+            .get_mut(&card_kind)
+            .ok_or(errors::NoSuchCard(card_kind))?;
+
+        if *count != 0 {
+            *count -= 1;
+            Ok(card_kind)
+        } else {
+            Err(errors::NoSuchCard(card_kind))
+        }
+    }
+}
+
+pub mod errors {
+    use super::CardKind;
+
+    #[derive(Debug)]
+    pub struct NoSuchCard(pub CardKind);
 }
 
 impl Deck {
