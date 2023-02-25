@@ -91,11 +91,7 @@ impl Deck {
     }
 
     pub fn card_count(&self, card_kind: CardKind) -> u8 {
-        if let Some(count) = self.0.get(&card_kind) {
-            *count
-        } else {
-            0
-        }
+        *self.0.get(&card_kind).unwrap_or(&0)
     }
 
     pub fn draw_specific_card(
