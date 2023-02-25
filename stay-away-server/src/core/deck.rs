@@ -81,6 +81,10 @@ impl Deck {
         Self(card_counts)
     }
 
+    pub fn empty() -> Self {
+        Self(HashMap::default())
+    }
+
     pub fn for_player_count(player_count: u8) -> Self {
         // todo!("Properly handle player count bounds");
         Self::from_card_counts(Self::player_count_to_card_counts(player_count).unwrap())
@@ -109,6 +113,53 @@ impl Deck {
         } else {
             Err(errors::NoSuchCard(card_kind))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn an_empty_deck_has_a_card_count_of_0() {
+        let deck = Deck::empty();
+
+        assert_eq!(deck.total_card_count(), 0);
+    }
+
+    #[test]
+    fn cannot_draw_cards_from_an_empty_deck() {
+        let mut deck = Deck::empty();
+
+        let result = deck.draw_specific_card(CardKind::Analysis);
+        assert!(result.is_err());
+
+        let error = result.expect_err("This was supposed to be a NoSuchCard error");
+        assert_eq!(error.0, CardKind::Analysis);
+    }
+
+    #[test]
+    fn cannot_draw_cards_from_a_deck_not_containing_such_card() {
+        let mut deck = Deck::from_card_counts(HashMap::from([(CardKind::Analysis, 3)]));
+        assert_eq!(deck.card_count(CardKind::Analysis), 3);
+
+        let result = deck.draw_specific_card(CardKind::BarredDoor);
+        assert!(result.is_err());
+
+        let error = result.expect_err("This was supposed to be a NoSuchCard error");
+        assert_eq!(error.0, CardKind::BarredDoor);
+    }
+
+    #[test]
+    fn drawing_a_specific_card_decreases_count_by_1() {
+        let mut deck = Deck::from_card_counts(HashMap::from([(CardKind::Analysis, 3)]));
+        assert_eq!(deck.card_count(CardKind::Analysis), 3);
+
+        let result = deck.draw_specific_card(CardKind::Analysis);
+        assert!(result.is_ok());
+
+        let drawn_card = result.expect("This is supposed to be an Analysis card");
+        assert_eq!(drawn_card, CardKind::Analysis);
     }
 }
 
