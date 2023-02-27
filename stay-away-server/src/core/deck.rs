@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use self::errors::NoSuchCard;
+use rand::seq::SliceRandom;
 
 pub struct Deck(HashMap<CardKind, u8>);
 
@@ -114,6 +114,31 @@ impl Deck {
             Err(errors::NoSuchCard(card_kind))
         }
     }
+
+    pub fn draw_random_card(&mut self) -> Result<CardKind, errors::EmptyDeck> {
+        let picked_card_kind = self.choose_random_card()?;
+        let picked_card_count = self.0.get_mut(&picked_card_kind).unwrap();
+
+        *picked_card_count -= 1;
+
+        Ok(picked_card_kind)
+    }
+
+    pub fn choose_random_card(&self) -> Result<CardKind, errors::EmptyDeck> {
+        if self.total_card_count() == 0 {
+            return Err(errors::EmptyDeck);
+        }
+
+        let mut rng = rand::thread_rng();
+        let possible_card_kinds_vec = self.0.keys().collect::<Vec<_>>();
+        let possible_card_kinds = possible_card_kinds_vec.as_slice();
+
+        let picked_card_kind = possible_card_kinds
+            .choose_weighted(&mut rng, |card| self.0.get(*card).unwrap_or(&0))
+            .unwrap();
+
+        Ok(**picked_card_kind)
+    }
 }
 
 #[cfg(test)]
@@ -162,6 +187,27 @@ mod tests {
         assert_eq!(drawn_card, CardKind::Analysis);
         assert_eq!(deck.card_count(CardKind::Analysis), 2);
     }
+
+    #[test]
+    fn drawing_a_random_card_errors_out_when_deck_is_empty() {
+        let mut deck = Deck::empty();
+
+        let result = deck.draw_random_card();
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn drawing_a_random_card_decreases_total_count_by_1() {
+        let mut deck = Deck::from_card_counts(HashMap::from([(CardKind::Analysis, 3)]));
+        assert_eq!(deck.total_card_count(), 3);
+
+        let result = deck.draw_random_card();
+        assert!(result.is_ok());
+
+        let drawn_card = result.expect("Should be an Analysis card");
+        assert_eq!(drawn_card, CardKind::Analysis);
+        assert_eq!(deck.total_card_count(), 2);
+    }
 }
 
 pub mod errors {
@@ -169,6 +215,9 @@ pub mod errors {
 
     #[derive(Debug)]
     pub struct NoSuchCard(pub CardKind);
+
+    #[derive(Debug)]
+    pub struct EmptyDeck;
 }
 
 impl Deck {
