@@ -7,3 +7,5 @@ version = "0.1.0"
 
 [dependencies]
 rand = {version = "0.8.5", features = ["alloc"]}
+tokio = {version = "1", features = ["full"]}
+warp = "0.3"
