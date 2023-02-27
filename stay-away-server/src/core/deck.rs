@@ -160,6 +160,7 @@ mod tests {
 
         let drawn_card = result.expect("This is supposed to be an Analysis card");
         assert_eq!(drawn_card, CardKind::Analysis);
+        assert_eq!(deck.card_count(CardKind::Analysis), 2);
     }
 }
 
