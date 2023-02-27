@@ -86,7 +86,6 @@ impl Deck {
     }
 
     pub fn for_player_count(player_count: u8) -> Self {
-        // todo!("Properly handle player count bounds");
         Self::from_card_counts(Self::player_count_to_card_counts(player_count).unwrap())
     }
 
