@@ -138,6 +138,14 @@ impl Deck {
 
         Ok(**picked_card_kind)
     }
+
+    pub fn add_card(&mut self, card_kind: CardKind) {
+        if let Some(count) = self.0.get_mut(&card_kind) {
+            *count += 1;
+        } else {
+            self.0.insert(card_kind, 1);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -206,6 +214,24 @@ mod tests {
         let drawn_card = result.expect("Should be an Analysis card");
         assert_eq!(drawn_card, CardKind::Analysis);
         assert_eq!(deck.total_card_count(), 2);
+    }
+
+    #[test]
+    fn inserting_a_card_increases_its_count_by_1() {
+        let mut deck = Deck::from_card_counts(HashMap::from([(CardKind::Analysis, 3)]));
+        assert_eq!(deck.total_card_count(), 3);
+        assert_eq!(deck.card_count(CardKind::Analysis), 3);
+        assert_eq!(deck.card_count(CardKind::BarredDoor), 0);
+
+        deck.add_card(CardKind::Analysis);
+        assert_eq!(deck.total_card_count(), 4);
+        assert_eq!(deck.card_count(CardKind::Analysis), 4);
+        assert_eq!(deck.card_count(CardKind::BarredDoor), 0);
+
+        deck.add_card(CardKind::BarredDoor);
+        assert_eq!(deck.total_card_count(), 5);
+        assert_eq!(deck.card_count(CardKind::Analysis), 4);
+        assert_eq!(deck.card_count(CardKind::BarredDoor), 1);
     }
 }
 
