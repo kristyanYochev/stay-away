@@ -11,7 +11,7 @@ pub struct Lobby;
 impl Lobby {
     const BUFFER_SIZE: usize = 64;
 
-    pub async fn start() -> LobbyHandle {
+    pub fn start() -> LobbyHandle {
         let (tx, mut rx) = mpsc::channel(Self::BUFFER_SIZE);
 
         tokio::spawn(async move {
