@@ -1,4 +1,6 @@
 mod core;
+mod lobby;
+
 use serde::Deserialize;
 use warp::Filter;
 
