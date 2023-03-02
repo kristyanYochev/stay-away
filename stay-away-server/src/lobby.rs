@@ -6,7 +6,7 @@ pub type LobbyHandle = mpsc::Sender<ClientMessage>;
 #[derive(Debug, Deserialize)]
 pub enum ClientMessage {}
 
-struct Lobby;
+pub struct Lobby;
 
 impl Lobby {
     const BUFFER_SIZE: usize = 64;
